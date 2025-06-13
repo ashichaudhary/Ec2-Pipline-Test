@@ -2,7 +2,7 @@ version: 0.2
 
 env:
   secrets-manager:
-    PRIVATE_KEY: my-ec2-private-key  # Your PEM stored in Secrets Manager
+    PRIVATE_KEY: my-ec2-private-key  # PEM key stored in Secrets Manager
 
 phases:
   install:
@@ -15,7 +15,7 @@ phases:
 
   pre_build:
     commands:
-      - echo "🔐 Preparing SSH key"
+      - echo "🔐 Setting up SSH key"
       - echo "$PRIVATE_KEY" > ec2-key.pem
       - chmod 400 ec2-key.pem
       - mkdir -p ~/.ssh
@@ -23,14 +23,14 @@ phases:
 
   build:
     commands:
-      - echo "🧪 Running dummy tests"
-      - echo "✅ Build phase done"
+      - echo "🧪 Running tests (if any)"
+      - echo "✅ Build successful"
 
   post_build:
     commands:
-      - echo "🚀 Deploying to EC2 instance"
-      - scp -i ec2-key.pem -r . ubuntu@18.171.56.70:/var/www/html/
-      - echo "✅ Deployment complete!"
+      - echo "🚀 Starting deployment to EC2"
+      - scp -i ec2-key.pem -r * ubuntu@18.171.56.70:/var/www/html/
+      - echo "✅ Deployment complete"
 
 artifacts:
   files:
