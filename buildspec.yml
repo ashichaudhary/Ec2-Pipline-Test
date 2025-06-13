@@ -2,34 +2,35 @@ version: 0.2
 
 env:
   secrets-manager:
-    PRIVATE_KEY: my-ec2-private-key     # Store your PEM key in Secrets Manager
+    PRIVATE_KEY: my-ec2-private-key  # Your PEM stored in Secrets Manager
 
 phases:
   install:
     runtime-versions:
       nodejs: 14
     commands:
-      - echo "Installing dependencies"
+      - echo "✅ Installing dependencies"
       - apt-get update -y
       - apt-get install -y openssh-client zip unzip
 
   pre_build:
     commands:
-      - echo "Preparing SSH key"
+      - echo "🔐 Preparing SSH key"
       - echo "$PRIVATE_KEY" > ec2-key.pem
       - chmod 400 ec2-key.pem
+      - mkdir -p ~/.ssh
       - ssh-keyscan -H 18.171.56.70 >> ~/.ssh/known_hosts
 
   build:
     commands:
-      - echo "Running tests (dummy step)"
-      - echo "Build step done"
+      - echo "🧪 Running dummy tests"
+      - echo "✅ Build phase done"
 
   post_build:
     commands:
-      - echo "Deploying to EC2"
-      - scp -i ec2-key.pem -r * ubuntu@18.171.56.70:/var/www/html
-      - echo "Deployment complete"
+      - echo "🚀 Deploying to EC2 instance"
+      - scp -i ec2-key.pem -r . ubuntu@18.171.56.70:/var/www/html/
+      - echo "✅ Deployment complete!"
 
 artifacts:
   files:
